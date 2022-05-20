@@ -82,7 +82,7 @@ module.exports.get = async () => {
   var fromBlock = parseInt(Config.fromBlock) || 0;
   const blocksPerBatch = parseInt(Config.blocksPerBatch) || 0;
   const delay = parseInt(Config.delay) || 0;
-  const toBlock = blockHeight;
+  const toBlock = parseInt(Config.toBlock) || blockHeight;
 
   const lastDownloadedBlock = await LastDownloadedBlock.get(symbol);
 
@@ -94,10 +94,16 @@ module.exports.get = async () => {
   console.log("From %d to %d", fromBlock, toBlock);
 
   let start = fromBlock;
-  let end = fromBlock + blocksPerBatch;
+  let end = fromBlock;
   let i = 0;
 
   while (end < toBlock) {
+    end = start + blocksPerBatch;
+    
+    if(end > toBlock) {
+      end = toBlock;
+    }
+    
     i++;
 
     if (delay) {
@@ -109,11 +115,7 @@ module.exports.get = async () => {
     await tryGetEvents(start, end, symbol);
 
     start = end + 1;
-    end = start + blocksPerBatch;
-
-    if (end > toBlock) {
-      end = toBlock;
-    }
+    end = start;
   }
 
   // Hard disk writing is too slow, you need to wait, depending on the file system
