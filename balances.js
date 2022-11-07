@@ -67,11 +67,14 @@ module.exports.createBalances = async (data) => {
     balances.set(wallet, { deposits, withdrawals });
   };
 
+  console.log("Processing [" + data.events.length + "] events...");
+  
   for (const event of data.events) {
     setDeposits(event);
     setWithdrawals(event);
   }
 
+  console.log("Closing balances");
   for (const [key, value] of balances.entries()) {
     if (key === "0x0000000000000000000000000000000000000000") {
       continue;
