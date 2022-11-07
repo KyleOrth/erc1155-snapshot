@@ -20,6 +20,15 @@ module.exports.createBalances = async (data) => {
       return;
     }
 
+    if(onlyTrackMints) {
+      //Ignore deposit if it is not a mint
+      //i.e. event.from must be equal to 0x000...
+      //Otherwise its just a transfer
+      if(event.from !== "0x0000000000000000000000000000000000000000") {
+        return;
+      }
+    }
+
     let deposits = (balances.get(wallet) || {}).deposits || [];
     let withdrawals = (balances.get(wallet) || {}).withdrawals || [];
 
@@ -36,6 +45,15 @@ module.exports.createBalances = async (data) => {
 
     if(tokenIdsToIgnoreSet && tokenIdsToIgnoreSet.has(event.tokenId)) {
       return;
+    }
+
+    if(onlyTrackMints) {
+      //Ignore withdrawal if it is not a mint
+      //i.e. event.from must be equal to 0x000...
+      //Otherwise its just a transfer
+      if(event.from !== "0x0000000000000000000000000000000000000000") {
+        return;
+      }
     }
 
     let deposits = (balances.get(wallet) || {}).deposits || [];
