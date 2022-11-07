@@ -36,7 +36,7 @@ module.exports.createBalances = async (data) => {
       throw new TypeError("invalid tokenId value");
     }
 
-    deposits = [...deposits, event.tokenId];
+    deposits.push(event.tokenId);
     balances.set(wallet, { deposits, withdrawals });
   };
 
@@ -63,7 +63,7 @@ module.exports.createBalances = async (data) => {
       throw new TypeError("invalid tokenId value");
     }
 
-    withdrawals = [...withdrawals, event.tokenId];
+    withdrawals.push(event.tokenId);
     balances.set(wallet, { deposits, withdrawals });
   };
 
