@@ -1,11 +1,24 @@
 "use strict";
 
+const Config = require("./config").getConfig();
+
 module.exports.createBalances = async (data) => {
   const balances = new Map();
   const closingBalances = [];
 
+  const onlyTrackMints = Config.onlyTrackMints;
+  const tokenIdsToIgnoreSet = undefined;
+  
+  if(Config.tokenIdsToIgnore) {
+    tokenIdsToIgnoreSet = new Set(Config.tokenIdsToIgnore);
+  }
+
   const setDeposits = (event) => {
     const wallet = event.to;
+
+    if(tokenIdsToIgnoreSet && tokenIdsToIgnoreSet.has(event.tokenId)) {
+      return;
+    }
 
     let deposits = (balances.get(wallet) || {}).deposits || [];
     let withdrawals = (balances.get(wallet) || {}).withdrawals || [];
@@ -20,6 +33,10 @@ module.exports.createBalances = async (data) => {
 
   const setWithdrawals = (event) => {
     const wallet = event.from;
+
+    if(tokenIdsToIgnoreSet && tokenIdsToIgnoreSet.has(event.tokenId)) {
+      return;
+    }
 
     let deposits = (balances.get(wallet) || {}).deposits || [];
     let withdrawals = (balances.get(wallet) || {}).withdrawals || [];
